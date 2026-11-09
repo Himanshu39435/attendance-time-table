@@ -17,7 +17,7 @@ export default function Login() {
     try { await login(f); toast.success('Welcome back'); } catch (er) { toast.error(errMsg(er)); setUnverified(er.response?.data?.code === 'EMAIL_NOT_VERIFIED'); setBusy(false); }
   };
   return (
-    <AuthShell title="Log in" sub="Continue to your attendance records." footer={setup ? <>First time here? <Link to="/register" className="font-semibold text-indigo-600">Create the admin account</Link></> : 'Staff accounts are created by your admin.'}>
+    <AuthShell title="Log in" sub="Continue to your attendance records." footer={setup ? <>First time here? <Link to="/register" className="font-semibold text-indigo-600">Register the admin email account</Link></> : <>New employee? <Link to="/register" className="font-semibold text-indigo-600">Create an account</Link></>}>
       <form onSubmit={submit} className="space-y-4">
         <div><label className="label">Email</label><input className="input" type="email" required autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></div>
         <div><div className="flex items-center justify-between"><label className="label">Password</label><Link to="/forgot-password" className="mb-1.5 text-sm font-medium text-indigo-600">Forgot password?</Link></div><input className="input" type="password" required autoComplete="current-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>

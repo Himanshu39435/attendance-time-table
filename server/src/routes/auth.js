@@ -19,17 +19,19 @@ async function issueVerification(user) {
   await mail.sendVerification(user, t.raw).catch((e) => console.error('Mail error:', e.message));
 }
 
-router.get('/setup-status', asyncH(async (req, res) => res.json({ needsSetup: adminEmail() ? !(await User.exists({ email: adminEmail() })) : (await User.countDocuments()) === 0 })));
+router.get('/setup-status', asyncH(async (req, res) => res.json({ needsSetup: !!adminEmail() && !(await User.exists({ email: adminEmail() })) })));
 
 router.post('/register', asyncH(async (req, res) => {
   const { name, email, password } = req.body;
   if (!name?.trim()) throw httpError(400, 'Name is required');
   if (!emailRx.test(email || '')) throw httpError(400, 'Enter a valid email');
   if (!password || password.length < 6) throw httpError(400, 'Password must be at least 6 characters');
-  // Public registration exists only to create the admin account. Everyone else is created by the admin.
-  if (adminEmail()) { if (!isAdminEmail(email)) throw httpError(403, 'Registration is closed. Staff accounts are created by the admin.'); }
-  else if (await User.countDocuments() > 0) throw httpError(403, 'Registration is closed. Ask your admin to create your account.');
-  const user = await User.create({ name, email, password: await bcrypt.hash(password, 12), role: 'admin', isVerified: true });
+  const hasUsers = await User.exists({});
+  // The configured owner is the only account that can become admin through public registration.
+  // All other registrations are employee accounts; admins can promote them later.
+  if (!hasUsers && adminEmail() && !isAdminEmail(email)) throw httpError(403, 'Create the owner admin account with the configured admin email first.');
+  const role = isAdminEmail(email) ? 'admin' : 'user';
+  const user = await User.create({ name, email, password: await bcrypt.hash(password, 12), role, isVerified: true });
   await Settings.create({ userId: user._id });
   res.status(201).json({ token: sign(user), user: pub(user) });
 }));

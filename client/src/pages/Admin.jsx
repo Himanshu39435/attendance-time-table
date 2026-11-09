@@ -72,8 +72,8 @@ export default function Admin() {
           <div><label className="label">Full name</label><input className="input" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
           <div><label className="label">Login email</label><input className="input" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
           <div><label className="label">Password (share it with them)</label><input className="input" type="text" minLength={6} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></div>
-          <div><label className="label">Role</label><select className="input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}><option value="user">Staff (checks in/out, sees own data)</option><option value="admin">Admin (full control)</option></select></div>
-          <p className="text-xs text-slate-500">They log in with this email and password and can only add and view their own attendance. They start with your current overtime and break settings.</p>
+          <div><label className="label">Role</label><select className="input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}><option value="user">Staff (checks in/out, sees own data)</option><option value="admin">Admin (can manage employees)</option></select></div>
+          <p className="text-xs text-slate-500">Admins can view and manage employee attendance. The configured admin email is the permanent owner account.</p>
           <div className="flex gap-3 pt-1"><button type="button" className="btn-ghost flex-1" onClick={() => setAdd(false)}>Cancel</button><button className="btn-primary flex-1" disabled={busy}>{busy ? 'Creating…' : 'Create account'}</button></div>
         </form></Modal>}
       {reset && <Modal title={`Reset password for ${reset.name}`} onClose={() => setReset(null)}>
